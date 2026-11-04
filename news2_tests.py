@@ -78,3 +78,9 @@ test_patient = Patient("p001",1)
 print(test_patient.patient_id)  #predict p001
 print(test_patient.spo2_scale)  #predict 1
 print(test_patient.history)  #predict []
+
+test_patient.add_observation(18, 98, False, 120, 56, "A", 37.0) #predicts 0, low
+print(test_patient.history) 
+print (len(test_patient.history) )
+print (test_patient.history[0]["total"])
+print (test_patient.history[0]["risk"])
