@@ -84,3 +84,8 @@ print(test_patient.history)
 print (len(test_patient.history) )
 print (test_patient.history[0]["total"])
 print (test_patient.history[0]["risk"])
+
+
+print(test_patient.latest_observation() ["risk"]) #predict low
+empty_patient = Patient("P002", 1)
+print(empty_patient.latest_observation())

@@ -157,6 +157,8 @@ class Patient:
         add observation takes the values for the parameters and adds them to the patients history.
         """
 
+    
+    
         scores = score_all(resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature, self.spo2_scale)
         
         #scores are calculates using score all function and added to patients history
@@ -184,4 +186,8 @@ class Patient:
         }
 
         self.history.append(observation)
-        
+
+    def latest_observation(self):
+        if len(self.history) == 0:
+            return None   #if no history is present then the function returns none
+        return self.history[-1] #if history is present it will return the last observation
