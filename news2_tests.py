@@ -11,9 +11,9 @@ show_score,
 oxygen_score,
 pick_spo2_band,
 score_all, 
-risk_level
+risk_level,
+Patient,
 )
-
 
 
 #tests
@@ -72,3 +72,9 @@ print(risk_level(p001))   #predict Low
 print(risk_level(p002))   #predict High
 print(risk_level(p003))   #predict Low-medium
 print(risk_level(p004))   #predict Medium
+
+
+test_patient = Patient("p001",1)
+print(test_patient.patient_id)  #predict p001
+print(test_patient.spo2_scale)  #predict 1
+print(test_patient.history)  #predict []
