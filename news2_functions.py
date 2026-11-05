@@ -1,8 +1,13 @@
 """
-The band defintions are defined as a list containing tuples. Each tuple contains first the lower limit, then the upper limit and the score given for that range.
+NEWS2 scoring system in python. Containing band definitions, scoring functions and a patient class to store the patients history.
 """
-
 from datetime import datetime
+
+import csv
+
+# ===== BAND DEFINITIONS =====
+#The band definitions are defined as a list containing tuples. 
+#Each tuple contains first the lower limit, then the upper limit and the score given for that range.
 
 RESPRATE_BANDS = [
     (4, 8, 3),
@@ -27,13 +32,13 @@ BP_BANDS = [
     (101, 110, 1),
     (111, 219, 0),
     (220, 250, 3),
-    ]
+]
 
 SPO2_SCALE1_BANDS = [
     (70, 91, 3),
     (92, 93, 2),
     (94, 95, 1),
-    (96, 100,0),
+    (96, 100, 0),
 ]
 
 TEMPERATURE_BANDS = [
@@ -61,11 +66,8 @@ SPO2_SCALE2_OXYGEN_BANDS = [
     (97, 100, 3),
 ]
 
-
+# ===== CONSCIOUSNESS SCORES =====
 #The dictionary is used to store the scores for each consciousness level.
-
-
-#dictionary
 CONSCIOUSNESS_SCORES = {
     "A": 0,
     "C": 3,
@@ -74,20 +76,38 @@ CONSCIOUSNESS_SCORES = {
     "U": 3,
 }
 
+# ==== CLINICAL CONCERN =====
+CLINICAL_CONCERN = {
+    "Low": "ward-based response",
+    "Low-medium": "Urgent ward-based response",
+    "Medium": "Key threshold for urgent response",
+    "High": "Urgent or emergency response"
+}
 
+# ===== RISK RANKING =====
+RISK_RANKING = {
+    "High": 4,
+    "Medium": 3,
+    "Low-medium": 2,
+    "Low": 1
+}
 
+# ===== CSV COLUMNS =====
+CSV_COLUMNS = ["patient_id", "spo2_scale", "recorded_at", "resp_rate", "spo2", "on_oxygen", "systolic_bp", "pulse", "consciousness", "temperature", "total", "risk"]
+
+# ===== FUNCTIONS =====
 #The functions are used to calculate the scores from each paramater and returns the total score and risk level.
 
-#functions
-def show_score(value, bands):              #TO SHOW THE SCORE FOR THE VALUE AND BANDS
+def show_score(value, bands):              
     """
     show score takes the value and the bands as an input and returns the score for the value based on the bands given.
     """
     for low, high, score in bands:
         if low <= value <= high:
             return score
+        
 
-def oxygen_score(on_oxygen):           #TAKES THE SCORE OF WHETHER THE PERSON IS ON OXYGEN OR NOT AND RETURNS A SCORE OF 2 IF TRUE AND 0 IF FALSE.
+def oxygen_score(on_oxygen):           
     """
     oxygen score takes a boolean value indicating whether the person is on oxygen and returns a score of 2 if true and 0 if false.
     """
@@ -95,34 +115,34 @@ def oxygen_score(on_oxygen):           #TAKES THE SCORE OF WHETHER THE PERSON IS
         return 2
     return 0        
 
-def pick_spo2_band(scale, on_oxygen):   #TO DECIDE WHICH SP02 SCALE TO USE
+
+def pick_spo2_band(scale, on_oxygen):   
     """
     pick spo2 band takes the scale and a boolean indicating whether the person is on oxygen and returns the correct bands.
     """
-    if scale == 1:                           #IF IT IS SCALE 1 THEN IT RETURNS THE VALUES FROM SCALE 1
+    if scale == 1:                           
         return SPO2_SCALE1_BANDS  
-    elif on_oxygen:                  #IF STEP 1 IS FALSE AND THE PERSON IS ON OXYGEN THEN IT WILL RETURN THE VALUES FROM SCALE 2 OXYGEN LIST
+    elif on_oxygen:                  
         return SPO2_SCALE2_OXYGEN_BANDS
     else:
-        return SPO2_SCALE2_AIR_BANDS  #IF NEITHER OF THE ABOVE ARE TRUE THEN THE VALLUES WILL BE RETURNED FROM SCALE 2 AIR LIST
+        return SPO2_SCALE2_AIR_BANDS  
+    
 
-def score_all(resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature, scale=1):  #SCALE 1 IS USED AS DEFAULT UNLESS OTHERWISE SPECIFIED.
+def score_all(resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature, scale=1):  
     """
     score all takes the values for each of the paramaters and returns a dictionary containing the scores for each.
     """
-    scores = {                             #DICTIONARY USED TO STORE THE SCORES FOR EACH PARAMETER                                                   
+    scores = {                                                                              
         "resp_rate": show_score(resp_rate, RESPRATE_BANDS), 
         "spo2": show_score(spo2, pick_spo2_band(scale, on_oxygen)),
-        "on_oxygen": oxygen_score(on_oxygen),                          #gives a score for all paramaters and returns as a dictionary
+        "on_oxygen": oxygen_score(on_oxygen),                          
         "systolic_bp": show_score(systolic_bp, BP_BANDS),
         "pulse": show_score(pulse, PULSE_BANDS),
         "consciousness": CONSCIOUSNESS_SCORES[consciousness],
         "temperature": show_score(temperature, TEMPERATURE_BANDS),
     }
+
     return scores
-
-
-
 
 
 def risk_level(scores):                           
@@ -130,19 +150,55 @@ def risk_level(scores):
     The risk level function takes the sum of the scores from the definitions and returns the risk level based on the total score and also looks for any score of 3.
     """
     total = sum(scores.values())
-    any_score_3 = 3 in scores.values()     #THIS CHECKS WHETHER ANY SCORE IS 3 AND THEN RETURNS A BOOLEAN VALUE.
+    any_score_3 = 3 in scores.values()     
 
     if total >= 7:
         return "High"
-    elif total >= 5:    #ELIF IS USED FOR IF THE CHECKS ABOVE WERE FALSE THEN USE THE NEXT VALUE
+    elif total >= 5:    
         return "Medium"
     elif any_score_3:
         return "Low-medium"
     else:
-        return "Low"      #IF NONE WERE TRUE THEN THE VALUE IS RETURNED AS LOW
+        return "Low"      
      
+def get_risk_rank(patient):
+    """
+    get risk rank will give a number for how serious the patients condition is will return 0 if the patient has no observations.
+    """
+    latest = patient.latest_observation()
+    if latest is None:
+        return 0
+    else:
+        return RISK_RANKING[latest['risk']]
 
-#classes
+def save_ward(ward, filename):
+    """
+    save ward will save patient observations onto a csv
+    """
+    with open(filename, "w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS)
+        writer.writeheader()
+        for patient in ward.values():
+            for observation in patient.history:
+                row = { 
+                    "patient_id": patient.patient_id,
+                    "spo2_scale": patient.spo2_scale,
+                    "recorded_at": observation["recorded_at"],
+                    "resp_rate": observation["resp_rate"],
+                    "spo2": observation["spo2"],
+                    "on_oxygen": observation["on_oxygen"],
+                    "systolic_bp": observation["systolic_bp"],
+                    "pulse": observation["pulse"],
+                    "consciousness": observation["consciousness"],
+                    "temperature": observation["temperature"],
+                    "total": observation["total"],
+                    "risk": observation["risk"]
+                }
+                writer.writerow(row)
+
+
+
+# ===== PATIENT CLASS =====
 class Patient:
     """
     patient class is used to create a patient with an id and spo2 scale. History is also created as an empty list to store patient history.
@@ -152,24 +208,21 @@ class Patient:
         self.spo2_scale = spo2_scale
         self.history = []
 
-    def add_observation(self, resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature):
+    def add_observation(self, resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature, recorded_at=None):
         """
         add observation takes the values for the parameters and adds them to the patients history.
         """
 
-    
-    
         scores = score_all(resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature, self.spo2_scale)
         
-        #scores are calculates using score all function and added to patients history
+        #scores are calculated using score all function
         
-
         risk = risk_level(scores)
         
-        #risk level is calculates using the risk level function created and is added to patient history
+        #risk level is calculated using the risk level function created
         
-
-        recorded_at = datetime.now()
+        if recorded_at is None:
+                recorded_at = datetime.now()
 
         observation = {
             "recorded_at": recorded_at,
@@ -187,7 +240,13 @@ class Patient:
 
         self.history.append(observation)
 
+
     def latest_observation(self):
+        """
+        latest observation returns the last observation in the patients history.
+        """
         if len(self.history) == 0:
             return None   #if no history is present then the function returns none
         return self.history[-1] #if history is present it will return the last observation
+
+
