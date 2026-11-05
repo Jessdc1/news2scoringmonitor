@@ -1,22 +1,12 @@
 from news2_functions import (
-RESPRATE_BANDS, 
-PULSE_BANDS, 
-BP_BANDS, 
-SPO2_SCALE1_BANDS, 
-TEMPERATURE_BANDS, 
-SPO2_SCALE2_AIR_BANDS, 
-SPO2_SCALE2_OXYGEN_BANDS, 
-CONSCIOUSNESS_SCORES, 
-show_score, 
-oxygen_score,
-pick_spo2_band,
-score_all, 
-risk_level,
+get_risk_rank,
 CLINICAL_CONCERN,
-Patient
+Patient,
+save_ward
 )
 
 ward = {}
+DATA_FILE = "ward_data.csv"
 
 def validate_number(text, low, high, decimal=False):
     """
@@ -105,6 +95,7 @@ def record_observation():
     print(f"Your patients total score is {latest['total']}")
     print(f"Risk level:{latest['risk']}")
     print(f"Clinical response: {CLINICAL_CONCERN[latest['risk']]}")
+    save_ward(ward, DATA_FILE)
 
 def add_patient():
     """
@@ -119,6 +110,35 @@ def add_patient():
     ward[patient_id] = new_patient
     print(f"Patient {patient_id} added to the ward.")
 
+def view_ward():
+    """
+    view ward will show the nurse thr patients id,overall score and risk level and a message if no patient is present.
+    """
+    if len(ward) == 0:
+        print("No patients are visible in the ward")
+        return
+    for patient in sorted(ward.values(), key= get_risk_rank, reverse=True):
+        latest = patient.latest_observation()
+        if latest is None:
+            print(f"{patient.patient_id} - no current observations")
+        else:
+            print(f"{patient.patient_id} - Score: {latest['total']} - Risk: {latest['risk']}")
+
+
+def view_history():
+    """
+    view history will show the nurse the patients previous history,scores and risk level.
+    """
+    patient_id = input("what is the patients id number?").strip().upper()
+    if patient_id not in ward:
+        print("Patient does not exist in the ward")
+        return
+    patient = ward[patient_id]
+    if len(patient.history) == 0:
+        print("No patient observations are recorded yet")
+        return
+    for observation in patient.history:
+        print(f"{observation['recorded_at'].strftime('%d/%m/%Y %H:%M')} - Score: {observation['total']} - Risk: {observation['risk']}")
 
 running=True
 while running:
@@ -132,8 +152,8 @@ while running:
 
     if choice == "1": add_patient()
     elif choice == "2": record_observation()
-    elif choice == "3": print("Ward view")
-    elif choice == "4": print("Patients history")
+    elif choice == "3": view_ward()
+    elif choice == "4": view_history()
     elif choice == "5": 
         print ("Goodbye") 
         running=False
