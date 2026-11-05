@@ -223,3 +223,4 @@ patient_data.csv
 patient inputs.csv
 data importer.py
 *.docx
+ward_data.csv
