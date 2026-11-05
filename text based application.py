@@ -12,6 +12,7 @@ oxygen_score,
 pick_spo2_band,
 score_all, 
 risk_level,
+CLINICAL_CONCERN,
 Patient
 )
 
@@ -70,12 +71,11 @@ def record_observation():
     """
     def record observation asks the nurse to input the patients id and spo2 scale along with the vital scores, it checks them against the validation functions.
     """
-    patientid = input("what is the patients id number?").strip().upper()
-
-
-    SPO2scale = validate_number(
-        "What SPO2 scale is the patient on? (1 or 2)", 1,2
-    )
+    patient_id = input("what is the patients id number?").strip().upper()
+    if patient_id not in ward:
+        print("Patient does not exist in the ward")
+        return
+    patient = ward[patient_id]
 
     resprate= validate_number(
         "What is the patients respiratory rate? ", 4, 50
@@ -99,8 +99,12 @@ def record_observation():
 
     temperature= validate_number("What is the patients temperature? (in degrees Celsius)", 28.0, 43.0, decimal=True)
                 
-    y = score_all(resprate,spo2level,on_oxygen,bloodpressure,pulse,consciousness,temperature)
+    patient.add_observation(resprate,spo2level,on_oxygen,bloodpressure,pulse,consciousness,temperature)
 
+    latest = patient.latest_observation()
+    print(f"Your patients total score is {latest['total']}")
+    print(f"Risk level:{latest['risk']}")
+    print(f"Clinical response: {CLINICAL_CONCERN[latest['risk']]}")
 
 def add_patient():
     """
@@ -134,4 +138,6 @@ while running:
         print ("Goodbye") 
         running=False
     else: print ("Please choose from options 1-5")
+
+
 
