@@ -196,6 +196,34 @@ def save_ward(ward, filename):
                 }
                 writer.writerow(row)
 
+def load_ward(filename):
+    """
+    load ward will read the csv and build the ward or return empty if no csv is created
+    """
+    ward = {}
+
+    try:
+        with open(filename, "r") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                patient_id = row["patient_id"]
+                if patient_id not in ward:
+                    new_patient = Patient(patient_id, (int(row["spo2_scale"])))
+                    ward[patient_id] = new_patient
+                ward[patient_id].add_observation(
+                    int(row["resp_rate"]),
+                    int(row["spo2"]),
+                    row["on_oxygen"] == "True",
+                    int(row["systolic_bp"]),
+                    int(row["pulse"]),
+                    row["consciousness"],
+                    float(row["temperature"]),
+                    recorded_at=datetime.fromisoformat(row["recorded_at"]),
+                )
+
+    except FileNotFoundError:
+        pass
+    return ward
 
 
 # ===== PATIENT CLASS =====
