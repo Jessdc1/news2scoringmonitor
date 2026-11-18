@@ -48,8 +48,6 @@ class Application(tk.Frame):
         self.id_entry.grid(row=0, column=1)
         self.scale_label = tk.Label(self.form, text="SPO2 Scale:")
         self.scale_label.grid(row=1, column=0)
-        self.scale_entry = tk.Entry(self.form) #creates typing box inside window
-        self.scale_entry.grid(row=1, column=1)
         self.scale_var = tk.IntVar(value=1)
         self.scale1= tk.Radiobutton(self.form, text="1", variable=self.scale_var, value=1)
         self.scale1.grid(row=1, column=1)
@@ -73,7 +71,56 @@ class Application(tk.Frame):
 
 
     def add_observations(self):
-        print("Add observations clicked")
+        self.obs_form = tk.Toplevel(self)
+        self.obs_form.title("Record Observations")
+        self.obs_id_label = tk.Label(self.obs_form, text="Patient ID:")
+        self.obs_id_label.grid(row=0, column=0)
+        self.obs_id_entry = tk.Entry(self.obs_form) #creates typing box inside window
+        self.obs_id_entry.grid(row=0, column=1)
+
+        self.resp_rate_label = tk.Label(self.obs_form, text="Respiration Rate:")
+        self.resp_rate_label.grid(row=1, column=0)
+        self.resp_rate_entry = tk.Entry(self.obs_form) #creates typing box inside window
+        self.resp_rate_entry.grid(row=1, column=1)
+
+        self.spo2_label = tk.Label(self.obs_form, text="SpO2:")
+        self.spo2_label.grid(row=2, column=0)
+        self.spo2_entry = tk.Entry(self.obs_form) #creates typing box inside window
+        self.spo2_entry.grid(row=2, column=1)
+
+        self.oxygen_var=tk.BooleanVar(value=False)
+        self.oxygen_check=tk.Checkbutton(self.obs_form, text="On Oxygen, variable=self.oxygen_var")
+        self.oxygen_check.grid(row=3, column=1)
+
+        self.systolic_bp_label = tk.Label(self.obs_form, text="Systolic Blood Pressure:")
+        self.systolic_bp_label.grid(row=4, column=0)
+        self.systolic_bp_entry = tk.Entry(self.obs_form) #creates typing box inside window
+        self.systolic_bp_entry.grid(row=4, column=1)
+
+        self.pulse_label = tk.Label(self.obs_form, text="Pulse:")
+        self.pulse_label.grid(row=5, column=0)
+        self.pulse_entry = tk.Entry(self.obs_form) #creates typing box inside window
+        self.pulse_entry.grid(row=5, column=1)
+
+        self.consciousness_label=tk.Label(self.obs_form, text="Consciousness (ACVPU)")
+        self.consciousness_label.grid(row=6, column=0)
+        self.consciousness_var=tk.StringVar(value="A")
+        self.consciousness_menu=tk.OptionMenu(self.obs_form, self.consciousness_var, "A", "C", "V", "P", "U")
+        self.consciousness_menu.grid(row=6, column=1)
+
+        self.temperature_label = tk.Label(self.obs_form, text="Temperature (degrees celcius):")
+        self.temperature_label.grid(row=7, column=0)
+        self.temperature_entry = tk.Entry(self.obs_form) #creates typing box inside window
+        self.temperature_entry.grid(row=7, column=1)
+
+        self.save_obs_btn = tk.Button(self.obs_form)
+        self.save_obs_btn["text"] = "Save"
+        self.save_obs_btn["command"] = self.save_observation
+        self.save_obs_btn.grid(row=8, column=1)
+
+    def save_observation(self):
+        print("save observation clicked")
+        
 
     def view_ward(self):
         print("View ward clicked")
