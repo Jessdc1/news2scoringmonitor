@@ -187,7 +187,37 @@ class Application(tk.Frame):
                 self.ward_list.insert(tk.END,f"{patient.patient_id} - Score: {latest['total']} - Risk: {latest['risk']}")
 
     def view_history(self):
-        print("View patients history clicked")
+        self.history_window = tk.Toplevel(self)
+        self.history_window.title("Patient History")
+        self.history_id_label = tk.Label(self.history_window, text="Patient ID:")
+        self.history_id_label.grid(row=0, column=0)
+        self.history_id_entry = tk.Entry(self.history_window) 
+        self.history_id_entry.grid(row=0, column=1)
+
+        self.show_btn = tk.Button(self.history_window)
+        self.show_btn["text"] = "Show"
+        self.show_btn["command"] = self.show_history
+        self.show_btn.grid(row=0, column=2)
+        self.history_list = tk.Listbox(self.history_window, width=40)
+        self.history_list.grid(row=1, column=0, columnspan=3)
+
+    def show_history(self):
+        patient_id=self.history_id_entry.get().strip().upper()
+        if patient_id == "":
+            messagebox.showerror("Error", "Please enter a patient ID")
+            return
+        if patient_id not in self.ward:
+            messagebox.showerror("Error", "Patient not found")
+            return
+        patient = self.ward[patient_id]
+        self.history_list.delete(0, tk.END)
+        if len(patient.history) == 0:
+            self.history_list.insert(tk.END,"No patient observations are recorded yet")
+            return
+        for observation in patient.history:
+            self.history_list.insert(tk.END,f"{observation['recorded_at'].strftime('%d/%m/%Y %H:%M')} - Score: {observation['total']} - Risk: {observation['risk']}")
+    
+
 
 
 root = tk.Tk()
