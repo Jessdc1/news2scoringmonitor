@@ -1,5 +1,5 @@
 """
-NEWS2 scoring system in python. Containing band definitions, scoring functions and a patient class to store the patients history.
+NEWS2 scoring system in python. Containing band definitions, scoring functions and a patient class to store the patients history. Saves and loads patients data into csv.
 """
 from datetime import datetime
 
@@ -78,7 +78,7 @@ CONSCIOUSNESS_SCORES = {
 
 # ==== CLINICAL CONCERN =====
 CLINICAL_CONCERN = {
-    "Low": "ward-based response",
+    "Low": "Ward-based response",
     "Low-medium": "Urgent ward-based response",
     "Medium": "Key threshold for urgent response",
     "High": "Urgent or emergency response"
@@ -244,13 +244,11 @@ class Patient:
         scores = score_all(resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature, self.spo2_scale)
         
         #scores are calculated using score all function
-        
-        risk = risk_level(scores)
-        
         #risk level is calculated using the risk level function created
         
+        risk = risk_level(scores)
         if recorded_at is None:
-                recorded_at = datetime.now()
+            recorded_at = datetime.now()
 
         observation = {
             "recorded_at": recorded_at,
