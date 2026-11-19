@@ -172,7 +172,19 @@ class Application(tk.Frame):
         
 
     def view_ward(self):
-        print("View ward clicked")
+        if len(self.ward) == 0:
+            messagebox.showinfo("View Ward", "No patients visible on the ward")
+            return
+        self.ward_window= tk.Toplevel(self)
+        self.ward_window.title("Ward Overview")
+        self.ward_list = tk.Listbox(self.ward_window, width=40)
+        self.ward_list.pack(padx=10, pady=10)
+        for patient in sorted(self.ward.values(), key= get_risk_rank, reverse=True):
+            latest = patient.latest_observation()
+            if latest is None:
+                self.ward_list.insert(tk.END,f"{patient.patient_id} - no current observations")
+            else:
+                self.ward_list.insert(tk.END,f"{patient.patient_id} - Score: {latest['total']} - Risk: {latest['risk']}")
 
     def view_history(self):
         print("View patients history clicked")
