@@ -59,13 +59,14 @@ class Application(tk.Frame):
         self.save_btn.grid(row=2, column=1)
 
     def save_new_patient(self):
-        patient_id=self.id_entry.get().strip().upper()
-        if patient_id in self.ward:
-            messagebox.showerror("Error", "Patient already exists")
-            return
+        patient_id = self.id_entry.get().strip().upper()
         if patient_id == "":
             messagebox.showerror("Error", "Please enter a patient ID")
             return
+        if patient_id in self.ward:
+            messagebox.showerror("Error", "Patient already exists")
+            return
+        self.ward[patient_id] = Patient(patient_id, self.scale_var.get())
         messagebox.showinfo("Patient added", "Patient added to the ward")
         self.form.destroy()
 
@@ -89,7 +90,7 @@ class Application(tk.Frame):
         self.spo2_entry.grid(row=2, column=1)
 
         self.oxygen_var=tk.BooleanVar(value=False)
-        self.oxygen_check=tk.Checkbutton(self.obs_form, text="On Oxygen, variable=self.oxygen_var")
+        self.oxygen_check=tk.Checkbutton(self.obs_form, text="On Oxygen", variable=self.oxygen_var)
         self.oxygen_check.grid(row=3, column=1)
 
         self.systolic_bp_label = tk.Label(self.obs_form, text="Systolic Blood Pressure:")
@@ -119,7 +120,55 @@ class Application(tk.Frame):
         self.save_obs_btn.grid(row=8, column=1)
 
     def save_observation(self):
-        print("save observation clicked")
+        patient_id=self.obs_id_entry.get().strip().upper()
+        if patient_id == "":
+            messagebox.showerror("Error", "Please enter a patient ID")
+            return
+        if patient_id not in self.ward:
+            messagebox.showerror("Error", "Patient not found")
+            return
+        patient = self.ward[patient_id]
+
+        resp_rate = self.check_number(self.resp_rate_entry, "Respiration Rate", 4, 50)
+        if resp_rate is None:
+            return
+        spo2 = self.check_number(self.spo2_entry, "SpO2", 70, 100)
+        if spo2 is None:
+            return
+        systolic_bp = self.check_number(self.systolic_bp_entry, "Systolic Blood Pressure", 50, 250)
+        if systolic_bp is None:
+            return
+        pulse = self.check_number(self.pulse_entry, "Pulse", 30, 220)
+        if pulse is None:
+            return
+        temperature = self.check_number(self.temperature_entry, "Temperature", 28.0, 43.0, decimal=True)
+        if temperature is None:
+            return
+        on_oxygen = self.oxygen_var.get()
+        consciousness = self.consciousness_var.get()
+        patient.add_observation(resp_rate,spo2,on_oxygen,systolic_bp,pulse,consciousness,temperature)
+        latest = patient.latest_observation()
+        save_ward(self.ward, DATA_FILE)
+
+        messagebox.showinfo("Observation saved", f"Total score: {latest['total']}\nRisk level: {latest['risk']}\nClinical response: {CLINICAL_CONCERN[latest['risk']]}")
+        self.obs_form.destroy()
+
+
+    def check_number(self, entry, name, low, high, decimal=False):
+        try:
+            answer = entry.get()
+            if decimal:
+                value = round(float(answer), 1)
+            else:
+                value = int(answer)
+            if low <= value <= high:
+                return value
+            else:
+                messagebox.showerror("Error", f"{name} must be between {low} and {high}")
+                return None
+        except ValueError:
+            messagebox.showerror("Error", f"{name} must be a number")
+            return None
         
 
     def view_ward(self):
