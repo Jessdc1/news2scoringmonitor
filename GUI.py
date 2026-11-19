@@ -221,8 +221,10 @@ class Application(tk.Frame):
 
 
 root = tk.Tk()
+root.title("NEWS2 Ward Monitor")
 app = Application(master=root)
 app.mainloop()
+
 
 
 
