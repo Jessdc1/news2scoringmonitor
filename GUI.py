@@ -1,5 +1,5 @@
 # GenAI acknowledgement:
-# Claude (Opus 5.5, Anthropic, https://claude.ai/) was used as a 'GenAI-assisted reviewer
+# I ackowledge the use of Claude (Opus 5.5, Anthropic, https://claude.ai/) as a 'GenAI-assisted reviewer
 # To provide feedback on a draft on my work.
 # To explain difficult Python concepts that I was unsure on. 
 # It reviewed my code and highlighted errors in spelling and grammar improvements.
