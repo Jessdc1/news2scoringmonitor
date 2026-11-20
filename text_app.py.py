@@ -1,3 +1,20 @@
+# GenAI acknowledgement:
+# Claude Anthropic was used as an assisted reviewer 
+# To explain difficult python concepts that I was unsure on. 
+# It reviewed my code and highlighted errors and improvements.
+# All code was written by myself with the help of lecture notes and Python coding guides.
+
+"""
+A text-based app which allows for a nurse to choose from 5 options on a menu to
+1. Add a patient into their ward
+2. Record the patients observations and get a score for them
+3. View the patients on the ward and see which has the highest risk
+4. View one of the patients full observation history
+5. Close the app
+
+All of the scoring logic code and classes are imported from news2_functions. All of the data is saved to and can be loaded from a csv file.
+"""
+#Imports for the code
 from news2_functions import (
 get_risk_rank,
 CLINICAL_CONCERN,
@@ -6,13 +23,16 @@ save_ward,
 load_ward
 )
 
+#Name of CSV file where the ward is saved
 DATA_FILE = "ward_data.csv"
+
+#Load any patients saved when the app is loaded and ward is a dictionary
 ward = load_ward(DATA_FILE)
 
 
 def validate_number(text, low, high, decimal=False):
     """
-    validate number takes the text to be displayed, the high and low values for the input and returns a valid number within the range.
+    validate number asks the user to enter a number until it is valid, shows the high and low values for the input and returns a valid number within the range.
     """
     while True:
         try:
@@ -61,7 +81,9 @@ def ask_consciousness(text):
 
 def record_observation():
     """
-    def record observation asks the nurse to input the patients id and spo2 scale along with the vital scores, it checks them against the validation functions.
+    record observation checks whether the patient exists
+    asks for each vital sign, adds the observation to the patient and prints the score, risk level and clinical response,
+    saves the ward to the csv
     """
     patient_id = input("what is the patients id number?").strip().upper()
     if patient_id not in ward:
@@ -69,17 +91,17 @@ def record_observation():
         return
     patient = ward[patient_id]
 
-    resprate= validate_number(
+    resp_rate= validate_number(
         "What is the patients respiratory rate? ", 4, 50
     )
 
-    spo2level= validate_number(
-        "What is the patients SPO2 level? ", 70, 100
+    SpO2= validate_number(
+        "What is the patients SpO2 level? ", 70, 100
     )
 
     on_oxygen = ask_yes_no("Is the patient on oxygen? (yes or no) ")
 
-    bloodpressure= validate_number(
+    systolic_bp= validate_number(
         "What is the patients systolic blood pressure? ", 50, 250
     )
 
@@ -91,7 +113,7 @@ def record_observation():
 
     temperature= validate_number("What is the patients temperature? (in degrees Celsius)", 28.0, 43.0, decimal=True)
                 
-    patient.add_observation(resprate,spo2level,on_oxygen,bloodpressure,pulse,consciousness,temperature)
+    patient.add_observation(resp_rate,SpO2,on_oxygen,systolic_bp,pulse,consciousness,temperature)
 
     latest = patient.latest_observation()
     print(f"Your patients total score is {latest['total']}")
@@ -101,7 +123,7 @@ def record_observation():
 
 def add_patient():
     """
-    add patient will ask the nurse for the patientss id and spo2 scale and will check the patient doesnt already exist. It will then create a new patient.
+    add patient will ask the nurse for the patients id and spo2 scale and will check the patient doesnt already exist. It will then create a new patient.
     """
     patient_id = input("What is the patients id? e.g. P001").strip().upper()
     if patient_id == "":
@@ -110,14 +132,14 @@ def add_patient():
     if patient_id in ward:
         print("Patient already exists")
         return
-    spo2_scale = validate_number("What SPO2 scale is the patient on? (1 or 2) ", 1,2)
+    spo2_scale = validate_number("What SpO2 scale is the patient on? (1 or 2) ", 1,2)
     new_patient = Patient(patient_id, spo2_scale)
     ward[patient_id] = new_patient
     print(f"Patient {patient_id} added to the ward.")
 
 def view_ward():
     """
-    view ward will show the nurse thr patients id,overall score and risk level and a message if no patient is present.
+    view ward will show the nurse the patients id,overall score and risk level and a message if no patient is present.
     """
     if len(ward) == 0:
         print("No patients are visible in the ward")
@@ -145,23 +167,32 @@ def view_history():
     for observation in patient.history:
         print(f"{observation['recorded_at'].strftime('%d/%m/%Y %H:%M')} - Score: {observation['total']} - Risk: {observation['risk']}")
 
+
+
+#Keeps showing the menu until the user clicks 5 to close the app
 running=True
 while running:
     print("NEWS2 Ward Monitor App")
     print("1.Add patient")
-    print("2.Add observations")
-    print("3.View patient ward")
-    print("4.View patients history")
+
+    print("2.Record observations")
+
+    print("3.View ward")
+
+    print("4.View history")
+
     print("5.Close")
+    
     choice=input("Choose an option from 1-5:").strip()
 
+#Runs the function that matches the users input
     if choice == "1": add_patient()
     elif choice == "2": record_observation()
     elif choice == "3": view_ward()
     elif choice == "4": view_history()
     elif choice == "5": 
         print ("Goodbye") 
-        running=False
+        running=False  #Ends the loop so the app closes
     else: print ("Please choose from options 1-5")
 
 

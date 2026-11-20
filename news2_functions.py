@@ -1,5 +1,12 @@
+# GenAI acknowledgement:
+# Claude Anthropic was used as an assisted reviewer 
+# To explain difficult python concepts that I was unsure on. 
+# It reviewed my code and highlighted errors and improvements.
+# All code was written by myself with the help of lecture notes and Python coding guides
+
 """
-NEWS2 scoring system in python. Containing band definitions, scoring functions and a patient class to store the patients history. Saves and loads patients data into csv.
+NEWS2 scoring system in Python. Containing band definitions, scoring functions and a patient class to store the patients history.
+Saves and loads patients data into Csv.
 """
 from datetime import datetime
 
@@ -96,7 +103,7 @@ RISK_RANKING = {
 CSV_COLUMNS = ["patient_id", "spo2_scale", "recorded_at", "resp_rate", "spo2", "on_oxygen", "systolic_bp", "pulse", "consciousness", "temperature", "total", "risk"]
 
 # ===== FUNCTIONS =====
-#The functions are used to calculate the scores from each paramater and returns the total score and risk level.
+#The functions are used to calculate the scores from each parameter and returns the total score and risk level.
 
 def show_score(value, bands):              
     """
@@ -130,7 +137,7 @@ def pick_spo2_band(scale, on_oxygen):
 
 def score_all(resp_rate, spo2, on_oxygen, systolic_bp, pulse, consciousness, temperature, scale=1):  
     """
-    score all takes the values for each of the paramaters and returns a dictionary containing the scores for each.
+    score all takes the values for each of the parameters and returns a dictionary containing the scores for each.
     """
     scores = {                                                                              
         "resp_rate": show_score(resp_rate, RESPRATE_BANDS), 
@@ -160,6 +167,7 @@ def risk_level(scores):
         return "Low-medium"
     else:
         return "Low"      
+    
      
 def get_risk_rank(patient):
     """
@@ -170,6 +178,7 @@ def get_risk_rank(patient):
         return 0
     else:
         return RISK_RANKING[latest['risk']]
+    
 
 def save_ward(ward, filename):
     """
@@ -195,6 +204,7 @@ def save_ward(ward, filename):
                     "risk": observation["risk"]
                 }
                 writer.writerow(row)
+                
 
 def load_ward(filename):
     """
