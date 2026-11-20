@@ -1,8 +1,9 @@
 # GenAI acknowledgement:
-# Claude Anthropic was used as an assisted reviewer 
-# To explain difficult python concepts that I was unsure on. 
-# It reviewed my code and highlighted errors and improvements.
-# All code was written by myself with the help of lecture notes and Python coding guides.
+# Claude (Opus 5.5, Anthropic, https://claude.ai/) was used as a 'GenAI-assisted reviewer
+# To provide feedback on a draft of my work.
+# To explain difficult Python concepts that I was unsure on. 
+# It reviewed my code and highlighted errors in spelling and grammar improvements.
+# All code was written by myself with the help of lecture notes, Python coding guides.
 
 """
 A text-based app which allows for a nurse to choose from 5 options on a menu to
