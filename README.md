@@ -15,8 +15,6 @@ The app comes in **two versions that do the same things**:
 - **Text version**: runs in the terminal using a numbered menu
 - **GUI version**: has windows and buttons, built with Tkinter
 
-> **This app is not for real clinical use.** This is a university project for Foundations of Programming at Keele University.
-
 ## Features
 
 In both versions, a nurse can:
@@ -36,7 +34,7 @@ In both versions, a nurse can:
 
 The app also:
 
-- **checks inputs**: it rejects words where a number is needed, numbers outside a set range, and blank or repeated patient IDs
+- **checks inputs**: it rejects words where a number is needed, numbers outside a set range and blank or repeated patient IDs
 - **saves automatically**: observations are stored in `ward_data.csv` and loaded again next time the app opens
 
 ## What is needed
@@ -53,7 +51,7 @@ Tkinter is included when you install Python on Windows or Mac.
      ```
      git clone https://github.com/Jessdc1/news2scoringmonitor.git
      ```
-   - or on GitHub, click **Code → Download ZIP**, then unzip it
+   - or on GitHub, click **Code and Download ZIP**, then unzip it
 2. Open a terminal inside the project folder:
    ```
    cd news2scoringmonitor
