@@ -224,3 +224,5 @@ patient inputs.csv
 data importer.py
 *.docx
 ward_data.csv
+*.pdf
+*.mp4
