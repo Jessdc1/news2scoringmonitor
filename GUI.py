@@ -1,8 +1,9 @@
 # GenAI acknowledgement:
-# Claude Anthropic was used as an assisted reviewer 
-# To explain difficult python concepts that I was unsure on. 
-# It reviewed my code and highlighted errors and improvements.
-# All code was written by myself with the help of lecture notes, Python coding guides and a guide to Tkinter.
+# Claude (Opus 5.5, Anthropic, https://claude.ai/) was used as a 'GenAI-assisted reviewer
+# To provide feedback on a draft on my work.
+# To explain difficult Python concepts that I was unsure on. 
+# It reviewed my code and highlighted errors in spelling and grammar improvements.
+# All code was written by myself with the help of lecture notes, Python coding guides and Tkinter 8.5 reference: A GUI for Python.
 
 """
 A GUI version of the NEWS2 ward monitor app, built using Tkinter
